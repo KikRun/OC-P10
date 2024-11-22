@@ -11,10 +11,11 @@ export default function User() {
     const token = useSelector(state => state.token)
     const firstName = useSelector(state => state.user.firstName)
     const lastName = useSelector(state => state.user.lastName)
-    const userName = useSelector(state => state.user.userName)
-    console.log("1  " + userName)
+    const userName = useSelector(state => state.user.userName);
 
+    const [editedUserName, setEditedUserName] = useState("")
     const [openForm, setOpenForm] = useState(false)
+
     function handleOpenForm() {
         setOpenForm(!openForm)
     }
@@ -36,7 +37,7 @@ export default function User() {
                 })
 
             const userData = await userFetch.json();
-            console.log("Requete fonctionne")
+            setEditedUserName(userName)
             dispatch(setProfile(userData.body))
         }
 
@@ -44,7 +45,7 @@ export default function User() {
 
     }, [dispatch, navigate, token, userName])
 
-    //Partie modification du User Name
+
 
     const handleUserNameForm = async (evt) => {
         evt.preventDefault();
@@ -56,17 +57,12 @@ export default function User() {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ userName }),
+                body: JSON.stringify({ userName: editedUserName }),
             })
 
-        const userNameData = await changeUserName.json();
-
-        console.log("WHY" + userNameData.body.userName)
         if (!changeUserName.ok) {
             throw new Error("Echec de la modification")
         } else {
-            console.log("succès")
-            console.log("END" + userName)
             dispatch(setUserName(userName))
             handleOpenForm()
 
@@ -88,7 +84,7 @@ export default function User() {
                     <form onSubmit={handleUserNameForm}>
                         <div className="username-input">
                             <label htmlFor="userName">User name</label>
-                            <input type="userName" id="userName" />
+                            <input type="userName" id="userName" value={editedUserName} onChange={(e) => setEditedUserName(e.target.value)} />
                         </div>
                         <div className="username-input">
                             <label htmlFor="firstName">First name</label>
